@@ -45,3 +45,10 @@ resource "aws_route" "route" {
   gateway_id = aws_internet_gateway.igw.id
   destination_cidr_block = "0.0.0.0/0"
 }
+
+resource "aws_route" "route" {
+  count = length(local.all_private_subnets_id)
+  route_table_id = local.all_private_subnets_id[count.index]
+  nat_gateway_id = aws_nat_gateway.ngw.id
+  destination_cidr_block = "0.0.0.0/0"
+}
