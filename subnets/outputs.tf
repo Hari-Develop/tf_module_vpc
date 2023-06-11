@@ -3,7 +3,7 @@ output "subnet_ids" {
 }
 
 output "subnet_cidrs" {
-  value = aws_subnet.main.*.block
+  value = aws_subnet.main.*.id
 }
 
 output "route_table_ids" {
