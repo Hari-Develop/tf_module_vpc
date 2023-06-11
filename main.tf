@@ -20,3 +20,9 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
   tags = merge(var.tags, {Name = "${var.env}-igw"})
 }
+
+resource "aws_eip" "nip" {
+  count = length(lookup(lookup(var.subnets, "public", null), "cidr_block" , null))
+  vpc = true
+  tags = merge(var.tags, {Name = "${var.env}-nip"})
+}
