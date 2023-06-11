@@ -26,3 +26,15 @@ resource "aws_eip" "nip" {
   vpc = true
   tags = merge(var.tags, {Name = "${var.env}-nip"})
 }
+
+resource "aws_nat_gateway" "ngw" {
+
+  count = length(var.subnets["public"].cidr_block)
+
+  allocation_id = awt_eip.ngw[count.index].id
+
+  subnet_id     = module.subnets["public"].subnet_ids[count.index]
+
+  tags = merge(var.tags, {Name = "${var.env}-nip"})
+  
+}
