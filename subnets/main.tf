@@ -5,3 +5,9 @@ resource "aws_subnet" "main" {
   availability_zone = var.azs[count.index]
   tags = merge(var.tags, {Name = "${var.env}-${var.name}-${count.index+1}"})
 }
+
+resource "aws_route_table" "main" {
+  count = length(var.cidr_block)
+  vpc_id = aws_vpc.main.id
+  tags = merge(var.tags, {Name = "${var.env}-${var.name}-${count.index+1}"})
+}
