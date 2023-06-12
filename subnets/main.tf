@@ -17,7 +17,3 @@ resource "aws_route_table_association" "association" {
   subnet_id      = aws_subnet.main[count.index].id
   route_table_id = aws_route_table.main[count.index].id
 }
-
-output "subnet_cidrs" {
-  value = aws_subnet.main.*.id
-}
