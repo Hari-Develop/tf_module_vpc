@@ -23,7 +23,6 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_eip" "ngw" {
   count = length(lookup(lookup(var.subnets, "public", null), "cidr_block" , null))
-  vpc = true
   tags = merge(var.tags, {Name = "${var.env}-ngw"})
 }
 
@@ -46,4 +45,22 @@ resource "aws_route" "ngw" {
   route_table_id = local.all_private_subnets_id[count.index]
   nat_gateway_id = element(aws_nat_gateway.ngw.*.id , count.index)
   destination_cidr_block = "0.0.0.0/0"
+}
+resource "aws_vpc_peering_connection" "peering" {
+  peer_vpc_id   = var.default_vpc_id
+  vpc_id        = aws_vpc.main.id
+  auto_accept = true
+}
+
+resource "aws_route" "peering_connecting_to_the_route" {
+  count = length(local.all_private_subnets_id)
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
+  route_table_id = element(local.all_private_subnets_id, count.index)
+  destination_cidr_block = var.default_vpc_cidr
+}
+
+resource "aws_route" "peering_connecting_to_default_vpc" {
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
+  route_table_id = var.default_vpc_rtb
+  destination_cidr_block = var.cidr_block
 }
